@@ -29,7 +29,7 @@ class HashTable:
     ind = self._find_usable_index(key, h, in_arr)
     self.array.set(ind, (key, value, True))
 
-    if self._get_current_load() > self.load_factor:
+    if self._get_current_load() >= self.load_factor:
       self._resize_array()
 
   # Returns the value associated with `key` in the hash table, or None if no
@@ -48,7 +48,7 @@ class HashTable:
         return None
       # found it
       k,v,in_use = self.array.get(index)
-      if k is key and in_use:
+      if k == key and in_use:
         return v
     return None
 
@@ -70,7 +70,7 @@ class HashTable:
 
       # if we found it and it's in use, remove it
       k,v,in_use = self.array.get(index)
-      if k is key and in_use:
+      if k == key and in_use:
         self.array.set(index, (k,v,False))
         self.item_count -= 1
         return v
@@ -120,6 +120,6 @@ class HashTable:
           return ind
       else:
         # we've found the original cell
-        if key is k:
+        if key == k:
           return ind
     return -1

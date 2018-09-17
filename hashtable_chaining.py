@@ -57,7 +57,7 @@ class HashTable:
       # it isn't already in the list
       cur_list.append((key, value))
 
-    if self._get_current_load() > self.load_factor:
+    if self._get_current_load() >= self.load_factor:
       self._resize_array()
 
   # Returns the value associated with `key` in the hash table, or None if no
@@ -75,7 +75,7 @@ class HashTable:
 
     # search through list
     for k,v in cur_list:
-      if k is key:
+      if k == key:
         return v
     # value was not found
     return None
@@ -92,15 +92,19 @@ class HashTable:
     cur_list = self.array.get(ind)
     ret_val = None
 
+    # if the list is None, we definitely don't have the value stored
+    if cur_list is None:
+      return None
+
     # search through the list to see if the key is in it
     for i in xrange(len(cur_list)):
-      if cur_list[i][0] is key: # found the key, so store the value
+      if cur_list[i][0] == key: # found the key, so store the value
         ret_val = cur_list[i][1]
         self.item_count -= 1
         break
 
     # just create a new list and replace the old one
-    new_list = [(k,v) for k,v in cur_list if k is not key]
+    new_list = [(k,v) for k,v in cur_list if k != key]
     self.array.set(ind, new_list)
     return ret_val
 
@@ -120,7 +124,7 @@ class HashTable:
       if prev_arr.get(i) is None:
         continue
 
-      cur_list = self.array.get(i)
+      cur_list = prev_arr.get(i)
       for k,v in cur_list:
         self.insert(k,v)
 
