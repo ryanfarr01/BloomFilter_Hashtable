@@ -46,16 +46,16 @@ class HashTable:
     ind = cs5112_hash1(key) % self.array_size
     cur_list = self.array.get(ind)
     if cur_list is None:
-      self.array.set(ind, [(key, value)])
+      self.array.set(ind, SLLNode((key, value), None))
     else:
       # see if it's already in the list
-      for i in xrange(len(cur_list)):
-        k,_ = cur_list[i]
+      for n in self._iterate_list(cur_list):
+        k,_ = n.get_value()
         if k is key:
-          cur_list[i] = (key, value)
+          n.set_value((key, value))
           return
       # it isn't already in the list
-      cur_list.append((key, value))
+      self._list_get_last(cur_list).set_next(SLLNode((key, value), None))
 
     if self._get_current_load() >= self.load_factor:
       self._resize_array()
@@ -74,7 +74,8 @@ class HashTable:
       return None
 
     # search through list
-    for k,v in cur_list:
+    for n in self._iterate_list(cur_list):
+      k,v = n.get_value()
       if k == key:
         return v
     # value was not found
@@ -96,16 +97,24 @@ class HashTable:
     if cur_list is None:
       return None
 
-    # search through the list to see if the key is in it
-    for i in xrange(len(cur_list)):
-      if cur_list[i][0] == key: # found the key, so store the value
-        ret_val = cur_list[i][1]
-        self.item_count -= 1
-        break
+    # first item in linked list
+    if cur_list.get_value()[0] == key:
+      ret_val = cur_list.get_value()[1]
+      self.item_count -= 1
+      self.array.set(ind, cur_list.get_next())
+    else:
+      # search through the list to see if the key is in it
+      for n in self._iterate_list(cur_list):
+        next_node = n.get_next()
+        if n == None: # it isn't in the list
+          break
+        k,v = next_node.get_value()
+        if k == key: # found the key, so store the value
+          ret_val = v
+          self.item_count -= 1
+          n.set_next(next_node.get_next())
+          break
 
-    # just create a new list and replace the old one
-    new_list = [(k,v) for k,v in cur_list if k != key]
-    self.array.set(ind, new_list)
     return ret_val
 
   # Returns the number of elements in the hash table.
@@ -125,7 +134,8 @@ class HashTable:
         continue
 
       cur_list = prev_arr.get(i)
-      for k,v in cur_list:
+      for n in self._iterate_list(cur_list):
+        k,v = n.get_value()
         self.insert(k,v)
 
   # Internal helper function for accessing the array underlying the hash table.
@@ -135,3 +145,15 @@ class HashTable:
 
   def _get_current_load(self):
     return float(self.item_count) / self.array_size
+
+  # generator for linked lists
+  def _iterate_list(self, first_node):
+    node = first_node
+    while node != None:
+      yield node
+      node = node.get_next()
+
+  def _list_get_last(self, node):
+    while node.get_next() != None:
+      node = node.get_next()
+    return node
