@@ -2,7 +2,7 @@ import unittest
 from bloom_filter import BloomFilter
 from hashtable_chaining import HashTable as hashtable_chaining
 from hashtable_linear_probing import HashTable as hashtable_linear_probing
-
+import random
 
 class TestBloomFilter(unittest.TestCase):
 
@@ -129,7 +129,29 @@ class TestHashtableChaining(unittest.TestCase):
             self.assertEqual(self.ht.size(), len(in_list))
             self.assertEqual(self.ht.get(k), v)
 
+        for i in range(len(full_list)-1,-1,-1):
+            k,v = full_list[i]
+            rem_val = self.ht.remove(k)
+            out_list.append((k,v))
+            self.assertEqual(self.ht.size(), 10000-len(out_list))
+            self.assertEqual(rem_val, v)
+
+
+    def test_10000_randoms(self):
+        full_list = [(str(i), "temp" + str(i)) for i in xrange(10000)]
+        in_list = []
+        out_list = []
+
         for k,v in full_list:
+            self.ht.insert(k,v)
+            in_list.append((k,v))
+            self.assertEqual(self.ht.size(), len(in_list))
+            self.assertEqual(self.ht.get(k), v)
+
+        while len(in_list)>0: 
+            i =random.randrange(0,len(in_list))
+            k,v = in_list[i]
+            in_list.remove(in_list[i])
             rem_val = self.ht.remove(k)
             out_list.append((k,v))
             self.assertEqual(self.ht.size(), 10000-len(out_list))
@@ -258,6 +280,44 @@ class TestHashtableProbing(unittest.TestCase):
             self.assertEqual(self.ht.get(k), v)
 
         for k,v in full_list:
+            rem_val = self.ht.remove(k)
+            out_list.append((k,v))
+            self.assertEqual(self.ht.size(), 10000-len(out_list))
+            self.assertEqual(rem_val, v)
+
+    def test_10000_reverse(self):
+        full_list = [(str(i), "temp" + str(i)) for i in xrange(10000)]
+        in_list = []
+        out_list = []
+
+        for k,v in full_list:
+            self.ht.insert(k,v)
+            in_list.append((k,v))
+            self.assertEqual(self.ht.size(), len(in_list))
+            self.assertEqual(self.ht.get(k), v)
+
+        for i in range(len(full_list)-1,-1,-1):
+            k,v = full_list[i]
+            rem_val = self.ht.remove(k)
+            out_list.append((k,v))
+            self.assertEqual(self.ht.size(), 10000-len(out_list))
+            self.assertEqual(rem_val, v)
+
+    def test_10000_randoms(self):
+        full_list = [(str(i), "temp" + str(i)) for i in xrange(10000)]
+        in_list = []
+        out_list = []
+
+        for k,v in full_list:
+            self.ht.insert(k,v)
+            in_list.append((k,v))
+            self.assertEqual(self.ht.size(), len(in_list))
+            self.assertEqual(self.ht.get(k), v)
+
+        while len(in_list)>0: 
+            i =random.randrange(0,len(in_list))
+            k,v = in_list[i]
+            in_list.remove(in_list[i])
             rem_val = self.ht.remove(k)
             out_list.append((k,v))
             self.assertEqual(self.ht.size(), 10000-len(out_list))

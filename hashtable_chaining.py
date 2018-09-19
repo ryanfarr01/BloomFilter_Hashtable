@@ -105,15 +105,18 @@ class HashTable:
     else:
       # search through the list to see if the key is in it
       for n in self._iterate_list(cur_list):
-        next_node = n.get_next()
         if n == None: # it isn't in the list
-          break
+          return None
+        next_node = n.get_next()
+
+        if next_node == None:
+          return None
         k,v = next_node.get_value()
         if k == key: # found the key, so store the value
           ret_val = v
           self.item_count -= 1
           n.set_next(next_node.get_next())
-          break
+          return ret_val
 
     return ret_val
 
